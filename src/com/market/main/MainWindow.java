@@ -18,6 +18,7 @@ import com.market.book_market2.CartMgm;
 import com.market.bookitem.BookInIt;
 import com.market.commons.MakeFont;
 import com.market.dao.BookDao;
+import com.market.dao.CartDao;
 import com.market.dao.MemberDao;
 import com.market.page.AdminLoginDialog;
 import com.market.page.AdminPage;
@@ -28,14 +29,16 @@ import com.market.vo.MemberVo;
 
 public class MainWindow extends JFrame {
 	static JPanel mMenuPanel, mPagePanel;
-	MemberVo member;
+	public static MemberVo member;
 	MemberDao memberDao;
 	BookDao bookDao;
+	CartDao cartDao;
 	CartMgm cm; // 싱글톤 패턴으로 사용하기 위해 main윈도우에서 생성
 	MainWindow main = this; // 중요!! MainWindow를 감추기 위해서 사용
 	
 	public MainWindow(Map param) {
 		bookDao = new BookDao();
+		cartDao = new CartDao();
 		cm = new CartMgm();
 		this.member = (MemberVo)param.get("member");
 		this.memberDao = (MemberDao)param.get("memberDao");
@@ -83,7 +86,7 @@ public class MainWindow extends JFrame {
 		
 		mPagePanel.removeAll();
 		BookInIt.init();
-		mPagePanel.add(new CartAddItemPage(mPagePanel, cm, bookDao));
+		mPagePanel.add(new CartAddItemPage(mPagePanel, cm, bookDao, cartDao));
 		mPagePanel.revalidate();
 		mPagePanel.repaint();
 
@@ -155,7 +158,7 @@ public class MainWindow extends JFrame {
 		bt4.addActionListener( e -> {
 			mPagePanel.removeAll();
 			BookInIt.init();
-			mPagePanel.add(new CartAddItemPage(mPagePanel, cm, bookDao));
+			mPagePanel.add(new CartAddItemPage(mPagePanel, cm, bookDao, cartDao));
 			mPagePanel.revalidate();
 			mPagePanel.repaint();
 		});

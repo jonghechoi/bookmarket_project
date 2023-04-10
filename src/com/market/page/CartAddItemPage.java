@@ -17,18 +17,24 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 
-import com.market.vo.BookVo;
 import com.market.book_market2.CartMgm;
-import com.market.bookitem.BookInIt;
 import com.market.commons.MakeFont;
 import com.market.dao.BookDao;
+import com.market.dao.CartDao;
+import com.market.main.MainWindow;
+import com.market.vo.BookVo;
+import com.market.vo.CartVo;
+import com.market.vo.MemberVo;
 
 public class CartAddItemPage extends JPanel {
 	ImageIcon imageBook;
 	int mSelectRow = 0;
 	CartMgm cm;
+	CartDao cartDao;
 	
-	public CartAddItemPage(JPanel panel, CartMgm cm, BookDao bookDao) {
+	public CartAddItemPage(JPanel panel, CartMgm cm, BookDao bookDao, CartDao cartDao) {
+		ArrayList<BookVo> booklist = bookDao.select();
+		this.cartDao = cartDao;
 		this.cm = cm;
 		setLayout(null);
 
@@ -38,7 +44,7 @@ public class CartAddItemPage extends JPanel {
 
 		JPanel imagePanel = new JPanel();
 		imagePanel.setBounds(20, 0, 300, 400);
-		imageBook = new ImageIcon("./images/ISBN1234.jpg");
+		imageBook = new ImageIcon("./images/" + booklist.get(0).getImg());
 		imageBook.setImage(imageBook.getImage().getScaledInstance(250, 300, Image.SCALE_DEFAULT));
 		JLabel label = new JLabel(imageBook);
 		imagePanel.add(label);
@@ -49,7 +55,6 @@ public class CartAddItemPage extends JPanel {
 		add(tablePanel);
 
 //		ArrayList<BookVo> booklist = BookInIt.getmBookList();
-		ArrayList<BookVo> booklist = bookDao.select();
 		Object[] tableHeader = { "도서ID", "도서명", "가격", "저자", "설명", "분야", "출판일" };
 		Object[][] content = new Object[booklist.size()][tableHeader.length];
 		for (int i = 0; i < booklist.size(); i++) {
@@ -90,10 +95,12 @@ public class CartAddItemPage extends JPanel {
 				int row = bookTable.getSelectedRow();
 				int col = bookTable.getSelectedColumn();
 				mSelectRow = row;
-				Object value = bookTable.getValueAt(row, 0);
-				String str = value + ".jpg";
+				
+//				Object value = bookTable.getValueAt(row, 0);
+//				String str = value + ".jpg";
+				String img = booklist.get(mSelectRow).getImg();
 
-				imageBook = new ImageIcon("./images/" + str);
+				imageBook = new ImageIcon("./images/" + img);
 				imageBook.setImage(imageBook.getImage().getScaledInstance(250, 300, Image.SCALE_DEFAULT));
 				JLabel label = new JLabel(imageBook);
 				imagePanel.removeAll();
@@ -119,6 +126,23 @@ public class CartAddItemPage extends JPanel {
 		addButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 //				ArrayList<BookVo> booklist = BookInIt.getmBookList();
+				CartVo cartVo = new CartVo();
+				cartVo.setIsbn(booklist.get(mSelectRow).getIsbn().toUpperCase());
+				cartVo.setMid(MainWindow.member.getMid().toUpperCase());
+				
+				int select = JOptionPane.showConfirmDialog(addButton, "장바구니에 추가하시겠습니까?");
+				if (select == 0) { // 확인 버튼 클릭시
+					if(cartDao.insert(cartVo)==1) {
+						JOptionPane.showMessageDialog(addButton, "장바구니에 추가되었습니다.");
+					}
+					System.out.println("size -->"+ cm.getSize());
+					cm.showList();
+				}
+			}
+			
+//			public void actionPerformed(ActionEvent e) {
+//				ArrayList<BookVo> booklist = BookInIt.getmBookList();
+//				
 //
 //				int select = JOptionPane.showConfirmDialog(addButton, "장바구니에 추가하시겠습니까?");
 //				if (select == 0) { // 확인 버튼 클릭시
@@ -130,7 +154,7 @@ public class CartAddItemPage extends JPanel {
 //					System.out.println("size -->"+ cm.getSize());
 //					cm.showList();
 //				}
-			}
+//			}
 		});
 
 	}
