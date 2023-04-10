@@ -132,30 +132,15 @@ public class CartAddItemPage extends JPanel {
 				
 				int select = JOptionPane.showConfirmDialog(addButton, "장바구니에 추가하시겠습니까?");
 				if (select == 0) { // 확인 버튼 클릭시
-					if(cartDao.insert(cartVo)==1) {
-						JOptionPane.showMessageDialog(addButton, "장바구니에 추가되었습니다.");
+					if(cartDao.insertCheck(cartVo) == 0) { // 기존에 mid isbn이 같은 데이터가 들어있다면
+						if(cartDao.insert(cartVo)==1) {
+							JOptionPane.showMessageDialog(addButton, "장바구니에 추가되었습니다.");
+						}
+					}else {
+						JOptionPane.showMessageDialog(addButton, "이미 등록된 도서입니다.");
 					}
-					System.out.println("size -->"+ cm.getSize());
-					cm.showList();
 				}
 			}
-			
-//			public void actionPerformed(ActionEvent e) {
-//				ArrayList<BookVo> booklist = BookInIt.getmBookList();
-//				
-//
-//				int select = JOptionPane.showConfirmDialog(addButton, "장바구니에 추가하시겠습니까?");
-//				if (select == 0) { // 확인 버튼 클릭시
-//					int idx = mSelectRow; // JTable에 출력된 목록중 마우스로 클릭된 row의 index
-//					
-//					if(cm.insert(booklist.get(idx))) {
-//						JOptionPane.showMessageDialog(addButton, "장바구니에 추가되었습니다.");
-//					}
-//					System.out.println("size -->"+ cm.getSize());
-//					cm.showList();
-//				}
-//			}
 		});
-
 	}
 }

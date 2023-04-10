@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.HashMap;
 import java.util.Map;
 
 import javax.swing.ImageIcon;
@@ -19,12 +20,14 @@ import com.market.bookitem.BookInIt;
 import com.market.commons.MakeFont;
 import com.market.dao.BookDao;
 import com.market.dao.CartDao;
+import com.market.dao.DBConn;
 import com.market.dao.MemberDao;
 import com.market.page.AdminLoginDialog;
 import com.market.page.AdminPage;
 import com.market.page.CartAddItemPage;
 import com.market.page.CartItemListPage;
 import com.market.page.GuestInfoPage;
+import com.market.vo.CartVo;
 import com.market.vo.MemberVo;
 
 public class MainWindow extends JFrame {
@@ -33,15 +36,24 @@ public class MainWindow extends JFrame {
 	MemberDao memberDao;
 	BookDao bookDao;
 	CartDao cartDao;
+	CartVo cartVo;
 	CartMgm cm; // 싱글톤 패턴으로 사용하기 위해 main윈도우에서 생성
 	MainWindow main = this; // 중요!! MainWindow를 감추기 위해서 사용
+	Map<String, DBConn> daoList = new HashMap<String,DBConn>();
+
 	
 	public MainWindow(Map param) {
 		bookDao = new BookDao();
 		cartDao = new CartDao();
+		cartVo = new CartVo();
 		cm = new CartMgm();
 		this.member = (MemberVo)param.get("member");
 		this.memberDao = (MemberDao)param.get("memberDao");
+		
+		daoList.put("memberDao",memberDao);
+		daoList.put("bookDao", bookDao);
+		daoList.put("cartDao", cartDao);
+		
 		String title = (String)param.get("title");
 		int x = (Integer)param.get("x");
 		int y = (Integer)param.get("y");
@@ -120,12 +132,11 @@ public class MainWindow extends JFrame {
 
 		bt2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				if(cm.getSize() == 0)
+				if(cartDao.getSize(member.getMid().toUpperCase()) == 0)
 					JOptionPane.showMessageDialog(bt2, "장바구니가 비어 있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				else {
 					mPagePanel.removeAll();
-					mPagePanel.add( new CartItemListPage(mPagePanel, cm));
+					mPagePanel.add( new CartItemListPage(mPagePanel, daoList));
 					mPagePanel.revalidate();
 					mPagePanel.repaint();
 				}
@@ -143,7 +154,9 @@ public class MainWindow extends JFrame {
 					JOptionPane.showMessageDialog(bt3, "장바구니가 비어 있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				}else {
 					mPagePanel.removeAll();
-					mPagePanel.add(new CartItemListPage(mPagePanel, cm));
+					mPagePanel.add(new CartItemListPage(mPagePanel, daoList
+							
+							));
 					mPagePanel.revalidate();
 					mPagePanel.repaint();
 				}
@@ -173,15 +186,15 @@ public class MainWindow extends JFrame {
 		bt5.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (cm.getSize() == 0) {
+				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
 					JOptionPane.showMessageDialog(bt5, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				}else {
 					mPagePanel.removeAll();
-					CartItemListPage cartList = new CartItemListPage(mPagePanel, cm);
+					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
 					cartList.mSelectRow = -1;
 				}
 				// 새롭게 띄움
-				mPagePanel.add(new CartItemListPage(mPagePanel, cm));
+				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
 				mPagePanel.revalidate();
 				mPagePanel.repaint();
 			}
@@ -196,12 +209,11 @@ public class MainWindow extends JFrame {
 		bt6.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 
-				if (cm.getSize() == 0) {
+				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
 					JOptionPane.showMessageDialog(bt6, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				}else {
-
 					mPagePanel.removeAll();
-					CartItemListPage cartList = new CartItemListPage(mPagePanel, cm);
+					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
 					if(cartList.mSelectRow == -1) {
 						JOptionPane.showMessageDialog(bt6, "삭제할 항목을 선택해주세요");
 					}else {
@@ -209,7 +221,7 @@ public class MainWindow extends JFrame {
 					}
 				}
 				// 새롭게 띄움
-				mPagePanel.add(new CartItemListPage(mPagePanel, cm));
+				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
 
 				mPagePanel.revalidate();
 				mPagePanel.repaint();

@@ -8,6 +8,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.JButton;
@@ -22,42 +23,48 @@ import javax.swing.table.TableModel;
 import com.market.book_market2.CartItemVo;
 import com.market.book_market2.CartMgm;
 import com.market.commons.MakeFont;
+import com.market.dao.BookDao;
+import com.market.dao.CartDao;
+import com.market.dao.DBConn;
+import com.market.dao.MemberDao;
+import com.market.main.MainWindow;
+import com.market.vo.CartVo;
 
 public class CartItemListPage extends JPanel {
-
 	JTable cartTable;
-	Object[] tableHeader = { "도서ID", "도서명", "단가", "수량", "총가격" };
-
-//	Cart mCart = new Cart();
+	Object[] tableHeader = { "번호", "도서ID", "도서명", "단가", "수량", "총가격" };
 	CartMgm cm;
+	MemberDao memberDao;
+	BookDao bookDao;
+	CartDao cartDao;
+	
 	public static int mSelectRow = -1;
 
-	public CartItemListPage(JPanel panel, CartMgm cm) {
-//		Font ft;
-//		ft = new Font("맑은 고딕", Font.BOLD, 15);
-		this.cm = cm;
+	public CartItemListPage(JPanel panel, Map<String, DBConn> daoList) {
+		this.memberDao = (MemberDao)daoList.get("memberDao");
+		this.bookDao = (BookDao)daoList.get("bookDao");
+		this.cartDao = (CartDao)daoList.get("cartDao");
+		
 		this.setLayout(null);
-
 		Rectangle rect = panel.getBounds();
-		System.out.println(rect);
 		this.setPreferredSize(rect.getSize());
 
 		JPanel bookPanel = new JPanel();
 		bookPanel.setBounds(0, 0, 1000, 400);
 		add(bookPanel);
-
-//		ArrayList<CartItem> cartItem = mCart.getmCartItem();
-		ArrayList<CartItemVo> cartItem = cm.getList();
-		Object[][] content = new Object[cartItem.size()][tableHeader.length];
+		
+		ArrayList<CartVo> cartItemList = cartDao.select(MainWindow.member.getMid().toUpperCase());
+		Object[][] content = new Object[cartItemList.size()][tableHeader.length];
 		Integer totalPrice = 0;
-		for (int i = 0; i < cartItem.size(); i++) {
-			CartItemVo item = cartItem.get(i);
-			content[i][0] = item.getIsbn();
-			content[i][1] = item.getTitle();
-			content[i][2] = item.getTotalPrice();
-			content[i][3] = item.getQty();
-			content[i][4] = item.getTotalPrice() * item.getQty(); 
-			totalPrice += item.getTotalPrice() * item.getQty(); 
+		for (int i = 0; i < cartItemList.size(); i++) {
+			CartVo item = cartItemList.get(i);
+			content[i][0] = item.getRno();
+			content[i][1] = item.getIsbn();
+			content[i][2] = item.getTitle();
+			content[i][3] = item.getStotal_price();
+			content[i][4] = item.getQty();
+			content[i][5] = item.getTotal_price() * item.getQty(); 
+			totalPrice += item.getTotal_price() * item.getQty();
 		}
 
 		cartTable = new JTable(content, tableHeader);
@@ -120,29 +127,34 @@ public class CartItemListPage extends JPanel {
 		/* 장바구니 항목 삭제하기 이벤트 처리 */
 		removeButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if (cm.getSize() == 0)
+				if (cartDao.getSize(MainWindow.member.getMid().toUpperCase()) == 0)
 					JOptionPane.showMessageDialog(clearButton, "장바구니가 비어있습니다");
 				else if (mSelectRow == -1) // 아무 row도 선택하지 않았을 경우
 					JOptionPane.showMessageDialog(clearButton, "삭제할 항목을 선택해주세요");
 				else {
-					cm.remove(mSelectRow);
-					ArrayList<CartItemVo> cartItem = cm.getList();
-//					cartItem.remove(mSelectRow);
-//					cart.mCartCount -= 1;
-					Object[][] content = new Object[cartItem.size()][tableHeader.length];
-					Integer totalPrice = 0;
-					for (int i = 0; i < cartItem.size(); i++) {
-						CartItemVo item = cartItem.get(i);
-						content[i][0] = item.getIsbn();
-						content[i][1] = item.getTitle();
-						content[i][2] = item.getTotalPrice();
-						content[i][3] = item.getQty();
-						content[i][4] = item.getTotalPrice() * item.getQty(); 
-						totalPrice +=  item.getTotalPrice() * item.getQty(); 
+					String rno = (String)cartTable.getValueAt(mSelectRow, 1); // RNO 번호로 삭제
+					boolean result = cartDao.delete(rno);
+					
+					if(!result) {
+						JOptionPane.showMessageDialog(null, "삭제에 실패했습니다. 재시도해주세요.");
+					}else {
+						ArrayList<CartVo> cartList = cartDao.select(MainWindow.member.getMid().toUpperCase());
+						Object[][] content = new Object[cartList.size()][tableHeader.length];
+						Integer totalPrice = 0;
+						for (int i = 0; i < cartList.size(); i++) {
+							CartVo item = cartList.get(i);
+							content[i][0] = item.getRno();
+							content[i][1] = item.getIsbn();
+							content[i][2] = item.getTitle();
+							content[i][3] = item.getStotal_price();
+							content[i][4] = item.getQty();
+							content[i][5] = item.getTotal_price() * item.getQty(); 
+							totalPrice += item.getTotal_price() * item.getQty();
+						}
+						TableModel tableModel = new DefaultTableModel(content, tableHeader);
+						totalPricelabel.setText("총금액: " + totalPrice + " 원");
+						cartTable.setModel(tableModel);
 					}
-					TableModel tableModel = new DefaultTableModel(content, tableHeader);
-					totalPricelabel.setText("총금액: " + totalPrice + " 원");
-					cartTable.setModel(tableModel);
 					mSelectRow = -1; // 마우스 커서 해제
 				}
 			}
