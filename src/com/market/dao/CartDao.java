@@ -10,7 +10,7 @@ public class CartDao extends DBConn{
 	public int insert(CartVo cartVo) {
 		int result = 0;
 		StringBuffer sb = new StringBuffer(100);
-		
+
 		sb.append("INSERT INTO BOOKMARKET_CART" + 
 				"  VALUES('C_'||LTRIM(TO_CHAR(SEQU_BOOKMARKET_CART_CID.NEXTVAL,'0000'))," + 
 				"          SYSDATE, ?, ?, ?)");
@@ -100,21 +100,53 @@ public class CartDao extends DBConn{
 		return list;
 	}
 	
-	public boolean delete(String rno) {
-		boolean result = false;
+	public void delete(String rno) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("DELETE FROM BOOKMARKET_CART"
-				+ " WHERE ISBN=?");
+				+ " WHERE RNO=?");
 		
 		try {
 			getPreparedStatement(sb.toString());
 			pstmt.setString(1, rno);
-			int num = pstmt.executeUpdate();
-			if(num != 0) result = true;
+			pstmt.executeUpdate();
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-		return result;
 	}
 	
+	public void delete(String mid, String clear) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("DELETE FROM BOOKMARKET_CART"
+				+ " WHERE MID=?");
+		
+		try {
+			getPreparedStatement(sb.toString());
+			pstmt.setString(1, mid);
+			pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
+	/* 선택한 ITEM 수량 수정하기 */
+	public void updateQty(String cid, String status) {
+		StringBuffer sb = new StringBuffer(100);
+		if(status.equals("plus")) {
+			sb.append("UPDATE BOOKMARKET_CART"
+					+ " SET QTY=(QTY+1)"
+					+ " WHERE CID=?");
+		}else {
+			sb.append("UPDATE BOOKMARKET_CART"
+					+ " SET QTY=(QTY-1)"
+					+ " WHERE CID=?");
+		}
+		
+		try {
+			getPreparedStatement(sb.toString());
+			pstmt.setString(1, cid);
+			pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

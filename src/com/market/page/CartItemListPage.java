@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -20,7 +21,6 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 
-import com.market.book_market2.CartItemVo;
 import com.market.book_market2.CartMgm;
 import com.market.commons.MakeFont;
 import com.market.dao.BookDao;
@@ -37,6 +37,8 @@ public class CartItemListPage extends JPanel {
 	MemberDao memberDao;
 	BookDao bookDao;
 	CartDao cartDao;
+	ArrayList<CartVo> cartItemList;
+	JLabel totalPricelabel;
 	
 	public static int mSelectRow = -1;
 
@@ -53,7 +55,7 @@ public class CartItemListPage extends JPanel {
 		bookPanel.setBounds(0, 0, 1000, 400);
 		add(bookPanel);
 		
-		ArrayList<CartVo> cartItemList = cartDao.select(MainWindow.member.getMid().toUpperCase());
+		cartItemList = cartDao.select(MainWindow.member.getMid().toUpperCase());
 		Object[][] content = new Object[cartItemList.size()][tableHeader.length];
 		Integer totalPrice = 0;
 		for (int i = 0; i < cartItemList.size(); i++) {
@@ -75,9 +77,8 @@ public class CartItemListPage extends JPanel {
 
 		JPanel totalPricePanel = new JPanel();
 		totalPricePanel.setBounds(0, 400, 1000, 50);
-		JLabel totalPricelabel = new JLabel("총금액: " + totalPrice + " 원");
+		totalPricelabel = new JLabel("총금액: " + priceFormat(totalPrice) + " 원"); // int->long 자동 형변환
 		totalPricelabel.setForeground(Color.red);
-//		totalPricelabel.setFont(ft);
 		MakeFont.getFont(totalPricelabel);
 		totalPricePanel.add(totalPricelabel);
 		add(totalPricePanel);
@@ -88,7 +89,6 @@ public class CartItemListPage extends JPanel {
 		add(buttonPanel);
 
 		JLabel buttonLabel = new JLabel("장바구니 비우기");
-//		buttonLabel.setFont(ft);
 		MakeFont.getFont(buttonLabel);
 		JButton clearButton = new JButton();
 		clearButton.add(buttonLabel);
@@ -97,28 +97,18 @@ public class CartItemListPage extends JPanel {
 		/* 장바구니 비우기 버튼 이벤트 처리 */
 		clearButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				ArrayList<CartItemVo> cartItem = cm.getList();
-				if (cm.getSize() == 0)
-					JOptionPane.showMessageDialog(clearButton, "장바구니가 비어 있습니다");
-				else {
 					int select = JOptionPane.showConfirmDialog(clearButton, "정말로 삭제하시겠습니까? ");
 					if (select == 0) {
+						cartDao.delete(MainWindow.member.getMid().toUpperCase(), "clear");
 						TableModel tableModel = new DefaultTableModel(new Object[0][0], tableHeader);
 						cartTable.setModel(tableModel);
 						totalPricelabel.setText("총금액: " + 0 + " 원");
-
-//						cart.deleteBook();
-						cm.remove();
-						
 						JOptionPane.showMessageDialog(clearButton, "삭제가 완료되었습니다");
-
 					}
-				}
 			}
 		});
 
 		JLabel removeLabel = new JLabel("장바구니 항목 삭제하기");
-//		removeLabel.setFont(ft);
 		MakeFont.getFont(removeLabel);
 		JButton removeButton = new JButton();
 		removeButton.add(removeLabel);
@@ -133,28 +123,8 @@ public class CartItemListPage extends JPanel {
 					JOptionPane.showMessageDialog(clearButton, "삭제할 항목을 선택해주세요");
 				else {
 					String rno = (String)cartTable.getValueAt(mSelectRow, 1); // RNO 번호로 삭제
-					boolean result = cartDao.delete(rno);
-					
-					if(!result) {
-						JOptionPane.showMessageDialog(null, "삭제에 실패했습니다. 재시도해주세요.");
-					}else {
-						ArrayList<CartVo> cartList = cartDao.select(MainWindow.member.getMid().toUpperCase());
-						Object[][] content = new Object[cartList.size()][tableHeader.length];
-						Integer totalPrice = 0;
-						for (int i = 0; i < cartList.size(); i++) {
-							CartVo item = cartList.get(i);
-							content[i][0] = item.getRno();
-							content[i][1] = item.getIsbn();
-							content[i][2] = item.getTitle();
-							content[i][3] = item.getStotal_price();
-							content[i][4] = item.getQty();
-							content[i][5] = item.getTotal_price() * item.getQty(); 
-							totalPrice += item.getTotal_price() * item.getQty();
-						}
-						TableModel tableModel = new DefaultTableModel(content, tableHeader);
-						totalPricelabel.setText("총금액: " + totalPrice + " 원");
-						cartTable.setModel(tableModel);
-					}
+					cartDao.delete(rno);
+					showList();
 					mSelectRow = -1; // 마우스 커서 해제
 				}
 			}
@@ -188,9 +158,11 @@ public class CartItemListPage extends JPanel {
 			}
 
 		});
-
-		JLabel updateQtyLabel = new JLabel("장바구니 항목 수량 줄이기");
-//		refreshLabel.setFont(ft);
+		
+		/**
+		 * 장바구니 항목 수정하기 : 증가
+		 */
+		JLabel updateQtyLabel = new JLabel("장바구니 항목 수량(+)");
 		MakeFont.getFont(updateQtyLabel);
 		JButton updateQtyButton = new JButton();
 		updateQtyButton.add(updateQtyLabel);
@@ -198,39 +170,80 @@ public class CartItemListPage extends JPanel {
 
 		updateQtyButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				if(cm.getSize() == 0) {
-					JOptionPane.showMessageDialog(null, "장바구니가 비어있습니다");
-				}else if(mSelectRow == -1) { 
+				if(mSelectRow == -1) { 
 					JOptionPane.showMessageDialog(null, "수정할 항목을 선택해주세요");
 				}else {
-					ArrayList<CartItemVo> cartItem = cm.getList();
-					int qty = cartItem.get(mSelectRow).getQty();
-					if(qty > 1) {
-						// 수량이 1보다 크므로 수량 -1씩 조절 가능
-						cm.updateQty(cartItem.get(mSelectRow).getIsbn());
-						
-						Object[][] content = new Object[cartItem.size()][tableHeader.length];
-						Integer totalPrice = 0;
-						for (int i = 0; i < cartItem.size(); i++) {
-							CartItemVo item = cartItem.get(i);
-							content[i][0] = item.getIsbn();
-							content[i][1] = item.getTitle();
-							content[i][2] = item.getTotalPrice();
-							content[i][3] = item.getQty();
-							content[i][4] = item.getTotalPrice() * item.getQty(); 
-							totalPrice += item.getTotalPrice() * item.getQty(); 
-						}
-						TableModel tableModel = new DefaultTableModel(content, tableHeader);
-						totalPricelabel.setText("총금액: " + totalPrice + " 원");
-						cartTable.setModel(tableModel);
+					int qty = cartItemList.get(mSelectRow).getQty();
+					if(qty > 0) {
+						// 수량 업데이트 Dao 메소드 만들어야 함
+						cartDao.updateQty(cartItemList.get(mSelectRow).getCid(), "plus");
+						showList();
 						mSelectRow = -1;
 					}else {
-						// 수량이 <=1이므로 수량 조절 불가능
-						JOptionPane.showMessageDialog(null, "2개 이상인 경우에만 수정 가능합니다");
+						JOptionPane.showMessageDialog(null, "0보다 큰 경우에만 수정 가능합니다.");
 					}
 				}
 			}
 		});
+		
+		/**
+		 * 장바구니 항목 수정하기 : 감소
+		 */
+		JLabel updateQtyLabel2 = new JLabel("장바구니 항목 수량(-)");
+		MakeFont.getFont(updateQtyLabel2);
+		JButton updateQtyButton2 = new JButton();
+		updateQtyButton2.add(updateQtyLabel2);
+		buttonPanel.add(updateQtyButton2);
+
+		updateQtyButton2.addActionListener(new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				if(mSelectRow == -1) { 
+					JOptionPane.showMessageDialog(null, "수정할 항목을 선택해주세요");
+				}else {
+					int qty = cartItemList.get(mSelectRow).getQty();
+					if(qty > 0) {
+						// 수량 업데이트 Dao 메소드 만들어야 함
+						cartDao.updateQty(cartItemList.get(mSelectRow).getCid(), "minus");
+						showList();
+						mSelectRow = -1;
+					}else {
+						JOptionPane.showMessageDialog(null, "0보다 큰 경우에만 수정 가능합니다.");
+					}
+				}
+			}
+		});
+		
+		
 	}
 	
-}
+	/* cartItemList 출력 */
+	public void showList() {
+		cartItemList = cartDao.select(MainWindow.member.getMid().toUpperCase());
+		Object[][] content = new Object[cartItemList.size()][tableHeader.length];
+		Integer totalPrice = 0;
+		for (int i = 0; i < cartItemList.size(); i++) {
+			CartVo item = cartItemList.get(i);
+			content[i][0] = item.getRno();
+			content[i][1] = item.getIsbn();
+			content[i][2] = item.getTitle();
+			content[i][3] = item.getStotal_price();
+			content[i][4] = item.getQty();
+			content[i][5] = item.getTotal_price(); 
+			totalPrice += item.getPrice() * item.getQty();
+		}
+		TableModel tableModel = new DefaultTableModel(content, tableHeader);
+		totalPricelabel.setText("총금액: " + priceFormat(totalPrice) + " 원");
+		cartTable.setModel(tableModel);
+	}
+	
+	public String priceFormat(long price) {
+		DecimalFormat df = new DecimalFormat("###,###");
+		String sprice = df.format(price);
+		System.out.println("sprice --> " + sprice);
+		
+		return sprice;
+	}
+	
+	
+	
+}// class

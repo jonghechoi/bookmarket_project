@@ -143,25 +143,25 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		JButton bt3 = new JButton("장바구니 전체 삭제", new ImageIcon("./images/3.png"));
-		bt3.setBounds(0, 0, 100, 30);
-		MakeFont.getFont(bt3);
-		mMenuPanel.add(bt3);
-
-		bt3.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (cm.getSize() == 0) {
-					JOptionPane.showMessageDialog(bt3, "장바구니가 비어 있습니다", "message", JOptionPane.ERROR_MESSAGE);
-				}else {
-					mPagePanel.removeAll();
-					mPagePanel.add(new CartItemListPage(mPagePanel, daoList
-							
-							));
-					mPagePanel.revalidate();
-					mPagePanel.repaint();
-				}
-			}
-		});
+//		JButton bt3 = new JButton("장바구니 전체 삭제", new ImageIcon("./images/3.png"));
+//		bt3.setBounds(0, 0, 100, 30);
+//		MakeFont.getFont(bt3);
+////		mMenuPanel.add(bt3);
+//
+//		bt3.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
+//					JOptionPane.showMessageDialog(bt3, "장바구니가 비어 있습니다", "message", JOptionPane.ERROR_MESSAGE);
+//				}else {
+//					mPagePanel.removeAll();
+//					mPagePanel.add(new CartItemListPage(mPagePanel, daoList
+//							
+//							));
+//					mPagePanel.revalidate();
+//					mPagePanel.repaint();
+//				}
+//			}
+//		});
 
 		
 		JButton bt4 = new JButton("장바구니 항목 추가하기", new ImageIcon("./images/4.png"));
@@ -178,55 +178,54 @@ public class MainWindow extends JFrame {
 
 		
 		/* 장바구니 항목 수량 줄이기  */ 
-		JButton bt5 = new JButton("장바구니 항목수량 줄이기", new ImageIcon("./images/5.png"));
-		MakeFont.getFont(bt5);
-		mMenuPanel.add(bt5);
-		
-		/* 장바구니 항목수량 줄이기 이벤트 처리 */
-		bt5.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
-					JOptionPane.showMessageDialog(bt5, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
-				}else {
-					mPagePanel.removeAll();
-					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
-					cartList.mSelectRow = -1;
-				}
-				// 새롭게 띄움
-				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
-				mPagePanel.revalidate();
-				mPagePanel.repaint();
-			}
-		});
+//		JButton bt5 = new JButton("장바구니 항목수량 줄이기", new ImageIcon("./images/5.png"));
+//		MakeFont.getFont(bt5);
+////		mMenuPanel.add(bt5);
+//		
+//		/* 장바구니 항목수량 줄이기 이벤트 처리 */
+//		bt5.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//
+//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
+//					JOptionPane.showMessageDialog(bt5, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
+//				}else {
+//					mPagePanel.removeAll();
+//					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
+//					cartList.mSelectRow = -1;
+//				}
+//				// 새롭게 띄움
+//				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
+//				mPagePanel.revalidate();
+//				mPagePanel.repaint();
+//			}
+//		});
 		
 		
 		/* 장바구니 항목 삭제하기 이벤트 처리 */
-		JButton bt6 = new JButton("장바구니 항목 삭제하기", new ImageIcon("./images/6.png"));
-		MakeFont.getFont(bt6);
-		mMenuPanel.add(bt6);
-
-		bt6.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-
-				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
-					JOptionPane.showMessageDialog(bt6, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
-				}else {
-					mPagePanel.removeAll();
-					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
-					if(cartList.mSelectRow == -1) {
-						JOptionPane.showMessageDialog(bt6, "삭제할 항목을 선택해주세요");
-					}else {
-						cartList.mSelectRow = -1;
-					}
-				}
-				// 새롭게 띄움
-				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
-
-				mPagePanel.revalidate();
-				mPagePanel.repaint();
-			}
-		});
+//		JButton bt6 = new JButton("장바구니 항목 삭제하기", new ImageIcon("./images/6.png"));
+//		MakeFont.getFont(bt6);
+////		mMenuPanel.add(bt6);
+//		bt6.addActionListener(new ActionListener() {
+//			public void actionPerformed(ActionEvent e) {
+//
+//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
+//					JOptionPane.showMessageDialog(bt6, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
+//				}else {
+//					mPagePanel.removeAll();
+//					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
+//					if(cartList.mSelectRow == -1) {
+//						JOptionPane.showMessageDialog(bt6, "삭제할 항목을 선택해주세요");
+//					}else {
+//						cartList.mSelectRow = -1;
+//					}
+//				}
+//				// 새롭게 띄움
+//				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
+//
+//				mPagePanel.revalidate();
+//				mPagePanel.repaint();
+//			}
+//		});
 
 		JButton bt7 = new JButton("주문하기", new ImageIcon("./images/7.png"));
 		MakeFont.getFont(bt7);
@@ -234,7 +233,7 @@ public class MainWindow extends JFrame {
 
 		bt7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				if (cm.getSize() == 0)
+				if (cartDao.getSize(member.getMid().toUpperCase()) == 0)
 					JOptionPane.showMessageDialog(bt7, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				else {
 					mPagePanel.removeAll();
