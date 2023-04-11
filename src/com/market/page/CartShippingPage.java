@@ -2,8 +2,10 @@ package com.market.page;
 
 import java.awt.Color;
 import java.awt.FlowLayout;
+import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
+import java.util.Map;
 
 import javax.swing.AbstractAction;
 import javax.swing.ButtonGroup;
@@ -14,24 +16,32 @@ import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
 import com.market.book_market2.CartMgm;
-import com.market.book_market2.OrderUserVo;
-import com.market.book_market2.UserVo;
 import com.market.commons.MakeFont;
+import com.market.dao.CartDao;
+import com.market.dao.DBConn;
+import com.market.dao.MemberDao;
 import com.market.main.MainWindow;
+import com.market.vo.MemberVo;
 
 public class CartShippingPage extends JPanel {
-	OrderUserVo ouser;
+//	OrderUserVo ouser;
+	MemberVo orderMember;
 	CartMgm cm;
 	JPanel shippingPanel;
 	JPanel radioPanel;
 	MainWindow main;
+	CartDao cartDao;
+	MemberDao memberDao;
 
-	public CartShippingPage(JPanel panel, CartMgm cm, UserVo user, MainWindow main) {
-		this.cm = cm;
-		this.ouser = (OrderUserVo)user;
+	public CartShippingPage(JPanel panel, CartMgm cm, MainWindow main, Map<String, DBConn> daoList) {
 		this.main = main;
-		setLayout(null);
+		this.cm = cm;
+		this.cartDao = (CartDao)daoList.get("cartDao");
+		this.memberDao = (MemberDao)daoList.get("memberDao");
+		orderMember = memberDao.select(main.member.getMid());
+//		this.ouser = (OrderUserVo)user;
 
+		setLayout(null);
 		Rectangle rect = panel.getBounds();
 		System.out.println(rect);
 		setPreferredSize(rect.getSize());
@@ -91,59 +101,44 @@ public class CartShippingPage extends JPanel {
 
 	public void UserShippingInfo(String select) {
 		JPanel namePanel = new JPanel();
-		namePanel.setBounds(0, 100, 700, 50);
 		JLabel nameLabel = new JLabel("고객명 : ");
-		JTextField nameLabel2 = new JTextField(15);
+		JTextField nameLabel2 = new JTextField(20);
+		namePanel.setBounds(0, 100, 700, 50);
+		MakeFont.getFont(nameLabel);
+		MakeFont.getFont(nameLabel2);
+		namePanel.add(nameLabel);
+		namePanel.add(nameLabel2);
+		
 		JPanel phonePanel = new JPanel();
 		JLabel phoneLabel = new JLabel("연락처 : ");
-		JTextField phoneLabel2 = new JTextField(15);
+		JTextField phoneLabel2 = new JTextField(20);
+		phonePanel.setBounds(0, 150, 700, 50);
+		MakeFont.getFont(phoneLabel);
+		MakeFont.getFont(phoneLabel2);
+		phonePanel.add(phoneLabel);
+		phonePanel.add(phoneLabel2);
+		
+		JPanel addressPanel = new JPanel();
+		JLabel label = new JLabel("배송지 : ");
+		JTextField addressText = new JTextField(20);
+		addressPanel.setBounds(0, 200, 700, 50);
+		MakeFont.getFont(label);
+		MakeFont.getFont(addressText);
+		addressPanel.add(label);
+		addressPanel.add(addressText);
 		
 		if (select=="yes") {
-			MakeFont.getFont(nameLabel);
-			namePanel.add(nameLabel);
-
-			MakeFont.getFont(nameLabel2);
 			nameLabel2.setBackground(Color.LIGHT_GRAY);
-			nameLabel2.setText(ouser.getName());
-			namePanel.add(nameLabel2);
-			shippingPanel.add(namePanel);
+			nameLabel2.setText(orderMember.getName());
 
-			phonePanel.setBounds(0, 150, 700, 50);
-			MakeFont.getFont(phoneLabel);
-			phonePanel.add(phoneLabel);
-
-			MakeFont.getFont(phoneLabel2);
 			phoneLabel2.setBackground(Color.LIGHT_GRAY);
-			phoneLabel2.setText(String.valueOf(ouser.getPhoneNumber()));
-			phonePanel.add(phoneLabel2);
-			shippingPanel.add(phonePanel);
-		}else {
-			MakeFont.getFont(nameLabel);
-			namePanel.add(nameLabel);
+			phoneLabel2.setText(orderMember.getPhone());
 
-			MakeFont.getFont(nameLabel2);
-			namePanel.add(nameLabel2);
-			shippingPanel.add(namePanel);
-
-			phonePanel.setBounds(0, 150, 700, 50);
-			MakeFont.getFont(phoneLabel);
-			phonePanel.add(phoneLabel);
-
-			MakeFont.getFont(phoneLabel2);
-			phonePanel.add(phoneLabel2);
-			shippingPanel.add(phonePanel);
+			addressText.setBackground(Color.LIGHT_GRAY);
+			addressText.setText(orderMember.getAddr());
 		}
-		
-
-		JPanel addressPanel = new JPanel();
-		addressPanel.setBounds(0, 200, 700, 50);
-		JLabel label = new JLabel("배송지 : ");
-		MakeFont.getFont(label);
-		addressPanel.add(label);
-
-		JTextField addressText = new JTextField(15);
-		MakeFont.getFont(addressText);
-		addressPanel.add(addressText);
+		shippingPanel.add(namePanel);
+		shippingPanel.add(phonePanel);
 		shippingPanel.add(addressPanel);
 
 		JPanel buttonPanel = new JPanel();
@@ -158,19 +153,15 @@ public class CartShippingPage extends JPanel {
 
 		orderButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				String name = nameLabel2.getText();
-				String phone = phoneLabel2.getText();
-				String address = addressText.getText();
-				System.out.println(name + "," + phone + ","+address);
+				orderMember.setName(nameLabel2.getText());
+				orderMember.setPhone(phoneLabel2.getText());
+				orderMember.setAddr(addressText.getText());
 				
-				ouser.setName(name);
-				ouser.setPhoneNumber(phone);
-				ouser.setAddress(address);
 				radioPanel.removeAll();
 				radioPanel.revalidate();
 				radioPanel.repaint();
 				shippingPanel.removeAll();
-				shippingPanel.add(new CartOrderBillPage(shippingPanel, cm, ouser, main));
+				shippingPanel.add(new CartOrderBillPage(shippingPanel, cm, orderMember, main));
 
 				shippingPanel.revalidate();
 				shippingPanel.repaint();

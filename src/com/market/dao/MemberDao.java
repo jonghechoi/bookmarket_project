@@ -7,7 +7,6 @@ public class MemberDao extends DBConn {
 	
 	public MemberVo select(String mid) {
 		MemberVo member = new MemberVo();
-		
 		StringBuffer sb = new StringBuffer(100);
 		// where절의 조건에 맞지 않아 rs에 담기는 값이 없으면 npe 에러 가능성 존재!!!
 		// 따라서 숫자로 반환되도록 COUNT() 함수를 사용해야함

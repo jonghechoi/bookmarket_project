@@ -30,6 +30,7 @@ public class GuestWindow extends JFrame implements ActionListener {
 	MemberDao memberDao;
 	JTextField nameField;
 	JPasswordField phoneField;
+	JButton enterButton, resetButton, exitButton;
 	
 	public GuestWindow(String title, int x, int y, int width, int height) {
 		memberDao = new MemberDao();
@@ -59,7 +60,6 @@ public class GuestWindow extends JFrame implements ActionListener {
 		add(titlePanel);
 
 		JLabel titleLabel = new JLabel("-- 로그인 정보를 입력해주세요 --");
-//		titleLabel.setFont(ft);
 		MakeFont.getFont(titleLabel);
 		
 		titleLabel.setForeground(Color.BLUE);
@@ -70,11 +70,9 @@ public class GuestWindow extends JFrame implements ActionListener {
 		add(namePanel);
 
 		JLabel nameLabel = new JLabel("아 이 디 : ");
-//		nameLabel.setFont(ft);
 		MakeFont.getFont(nameLabel);
 		namePanel.add(nameLabel);
 		nameField = new JTextField(10);
-//		nameField.setFont(ft);
 		MakeFont.getFont(nameField);
 		namePanel.add(nameField);
 
@@ -83,27 +81,39 @@ public class GuestWindow extends JFrame implements ActionListener {
 		add(phonePanel);
 
 		JLabel phoneLabel = new JLabel("패스워드: ");
-//		phoneLabel.setFont(ft);
 		MakeFont.getFont(phoneLabel);
 		phonePanel.add(phoneLabel);
 
 		phoneField = new JPasswordField(10);
-//		phoneField.setFont(ft);
 		MakeFont.getFont(phoneField);
 		phonePanel.add(phoneField);
 
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setBounds(0, 500, 1000, 100);
 		add(buttonPanel);
+		
 		JLabel buttonLabel = new JLabel("로그인", new ImageIcon("images/shop.png"), JLabel.LEFT);
-//		buttonLabel.setFont(ft);
 		MakeFont.getFont(buttonLabel);
-		JButton enterButton = new JButton();
+		enterButton = new JButton();
 		enterButton.add(buttonLabel);
 		buttonPanel.add(enterButton);
 		
+		JLabel buttonLabel2 = new JLabel(" 다시쓰기 ", new ImageIcon("images/shop.png"), JLabel.LEFT);
+		MakeFont.getFont(buttonLabel2);
+		resetButton = new JButton();
+		resetButton.add(buttonLabel2);
+		buttonPanel.add(resetButton);
+		
+		JLabel buttonLabel3 = new JLabel(" 쇼핑 종료  ", new ImageIcon("images/shop.png"), JLabel.LEFT);
+		MakeFont.getFont(buttonLabel3);
+		exitButton = new JButton();
+		exitButton.add(buttonLabel3);
+		buttonPanel.add(exitButton);
+		
 		phoneField.addActionListener(this);
 		enterButton.addActionListener(this);
+		resetButton.addActionListener(this);
+		exitButton.addActionListener(this);
 		
 		this.addWindowListener(new WindowAdapter() {
 			@Override
@@ -114,42 +124,52 @@ public class GuestWindow extends JFrame implements ActionListener {
 	}
 	
 	public void actionPerformed(ActionEvent e) {
-			JLabel message = new JLabel("사용자 정보 에러");
-			MakeFont.getFont(message);
-			if (nameField.getText().isEmpty()) {
-				JOptionPane.showMessageDialog(null, "아이디를 입력해주세요");
-				nameField.requestFocus();
-			}else if(phoneField.getText().isEmpty()) {
-				JOptionPane.showMessageDialog(null, "패스워드를 입력해주세요");
-				phoneField.requestFocus();
-			}else {
-				String mid = nameField.getText().trim();
-				String pass = phoneField.getText().trim();
-				if(memberDao.select(mid, pass) == 1) {
-//					System.out.println("고르인 성공~~~~~");
-					MemberVo member = new MemberVo();
-					member.setMid(nameField.getText());
-					member.setPass(phoneField.getText());
-					setVisible(false);
-					
-					// interface인 부모 Map은 자식인 HashMap으로 생성 가능!!
-					// 자주 사용한다면 아예 vo를 만드는게 나음
-					Map param = new HashMap(); 
-					param.put("title", "온라인 서점");
-					param.put("x", 0);
-					param.put("y", 0);
-					param.put("width", 1000);
-					param.put("height", 750);
-					param.put("member", member);
-					param.put("memberDao", memberDao);
-					new MainWindow(param);
-				}else {
-					// 로그인 실패 경고창
-					JOptionPane.showMessageDialog(null, "로그인에 실패했습니다 \n다시 입력해주세요");
-					nameField.setText("");
-					phoneField.setText("");
+			Object obj = e.getSource();
+			if(obj == phoneField || obj == enterButton) {
+				// 로그인 처리
+				JLabel message = new JLabel("사용자 정보 에러");
+				MakeFont.getFont(message);
+				if (nameField.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "아이디를 입력해주세요");
 					nameField.requestFocus();
+				}else if(phoneField.getText().isEmpty()) {
+					JOptionPane.showMessageDialog(null, "패스워드를 입력해주세요");
+					phoneField.requestFocus();
+				}else {
+					String mid = nameField.getText().trim();
+					String pass = phoneField.getText().trim();
+					if(memberDao.select(mid, pass) == 1) {
+						MemberVo member = new MemberVo();
+						member.setMid(nameField.getText());
+						member.setPass(phoneField.getText());
+						setVisible(false);
+						
+						// interface인 부모 Map은 자식인 HashMap으로 생성 가능!!
+						// 자주 사용한다면 아예 vo를 만드는게 나음
+						Map param = new HashMap(); 
+						param.put("title", "온라인 서점");
+						param.put("x", 0);
+						param.put("y", 0);
+						param.put("width", 1000);
+						param.put("height", 750);
+						param.put("member", member);
+						param.put("memberDao", memberDao);
+						new MainWindow(param);
+					}else {
+						// 로그인 실패 경고창
+						JOptionPane.showMessageDialog(null, "로그인에 실패했습니다 \n다시 입력해주세요");
+						nameField.setText("");
+						phoneField.setText("");
+						nameField.requestFocus();
+					}
 				}
+			}else if(obj == resetButton) {
+				nameField.setText("");
+				phoneField.setText("");
+				nameField.requestFocus();
+			}else if(obj == exitButton) {
+				int select = JOptionPane.showConfirmDialog(null, "정말로 종료하시겠습니까?");
+				if(select==0) System.exit(1);
 			}
 	}
 }

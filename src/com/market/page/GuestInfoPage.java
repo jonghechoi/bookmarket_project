@@ -15,9 +15,7 @@ public class GuestInfoPage extends JPanel {
 
 	public GuestInfoPage(JPanel panel, MemberVo member, MemberDao memberDao) {
 		member = memberDao.select(member.getMid());
-
 		setLayout(null);
-
 		Rectangle rect = panel.getBounds();
 		setPreferredSize(rect.getSize());
 		
@@ -36,7 +34,6 @@ public class GuestInfoPage extends JPanel {
 		memberValue[5] = member.getMdate();
 		
 		for(int i=0; i<nameList.length; i++) {
-//			JPanel outPanel = new JPanel();
 			JLabel nameLabel = new JLabel(nameList[i]);
 			MakeFont.getFont(nameLabel);
 			nameLabel.setBackground(Color.BLUE);
@@ -45,25 +42,8 @@ public class GuestInfoPage extends JPanel {
 			nameField.setText(memberValue[i]);
 			MakeFont.getFont(nameField);
 			
-//			outPanel.add(nameLabel);
-//			outPanel.add(nameField);
 			namePanel.add(nameLabel);
 			namePanel.add(nameField);
 		}
-
-		
-//		outPanel.setBounds(0, 150, 1000, 100);
-		
-//		JPanel phonePanel = new JPanel();
-//		phonePanel.setBounds(0, 150, 1000, 100);
-//		add(phonePanel);
-//		JLabel phoneLabel = new JLabel("연 락 처 : ");
-//		MakeFont.getFont(phoneLabel);
-//		JLabel phoneField = new JLabel();
-//		phoneField.setText(member.getPhone());
-//		MakeFont.getFont(phoneField);
-//
-//		phonePanel.add(phoneLabel);
-//		phonePanel.add(phoneField);
 	}
 }

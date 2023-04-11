@@ -26,6 +26,7 @@ import com.market.page.AdminLoginDialog;
 import com.market.page.AdminPage;
 import com.market.page.CartAddItemPage;
 import com.market.page.CartItemListPage;
+import com.market.page.CartShippingPage;
 import com.market.page.GuestInfoPage;
 import com.market.vo.CartVo;
 import com.market.vo.MemberVo;
@@ -40,7 +41,6 @@ public class MainWindow extends JFrame {
 	CartMgm cm; // 싱글톤 패턴으로 사용하기 위해 main윈도우에서 생성
 	MainWindow main = this; // 중요!! MainWindow를 감추기 위해서 사용
 	Map<String, DBConn> daoList = new HashMap<String,DBConn>();
-
 	
 	public MainWindow(Map param) {
 		bookDao = new BookDao();
@@ -111,13 +111,10 @@ public class MainWindow extends JFrame {
 	}
 
 	public void menuIntroduction() {
-
 		JButton bt1 = new JButton("고객 정보 확인하기", new ImageIcon("./images/1.png"));
 		bt1.setBounds(0, 0, 100, 50);
 		MakeFont.getFont(bt1);
 		mMenuPanel.add(bt1);
-
-
 		bt1.addActionListener( e -> {
 				mPagePanel.removeAll();  
 				mPagePanel.add(new GuestInfoPage(mPagePanel, member, memberDao)); 
@@ -129,7 +126,6 @@ public class MainWindow extends JFrame {
 		bt2.setBounds(0, 0, 100, 30);
 		MakeFont.getFont(bt2);
 		mMenuPanel.add(bt2);
-
 		bt2.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if(cartDao.getSize(member.getMid().toUpperCase()) == 0)
@@ -142,30 +138,8 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-
-//		JButton bt3 = new JButton("장바구니 전체 삭제", new ImageIcon("./images/3.png"));
-//		bt3.setBounds(0, 0, 100, 30);
-//		MakeFont.getFont(bt3);
-////		mMenuPanel.add(bt3);
-//
-//		bt3.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
-//					JOptionPane.showMessageDialog(bt3, "장바구니가 비어 있습니다", "message", JOptionPane.ERROR_MESSAGE);
-//				}else {
-//					mPagePanel.removeAll();
-//					mPagePanel.add(new CartItemListPage(mPagePanel, daoList
-//							
-//							));
-//					mPagePanel.revalidate();
-//					mPagePanel.repaint();
-//				}
-//			}
-//		});
-
 		
 		JButton bt4 = new JButton("장바구니 항목 추가하기", new ImageIcon("./images/4.png"));
-//		bt4.setFont(ft);
 		MakeFont.getFont(bt4);
 		mMenuPanel.add(bt4);
 		bt4.addActionListener( e -> {
@@ -176,86 +150,31 @@ public class MainWindow extends JFrame {
 			mPagePanel.repaint();
 		});
 
-		
-		/* 장바구니 항목 수량 줄이기  */ 
-//		JButton bt5 = new JButton("장바구니 항목수량 줄이기", new ImageIcon("./images/5.png"));
-//		MakeFont.getFont(bt5);
-////		mMenuPanel.add(bt5);
-//		
-//		/* 장바구니 항목수량 줄이기 이벤트 처리 */
-//		bt5.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//
-//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
-//					JOptionPane.showMessageDialog(bt5, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
-//				}else {
-//					mPagePanel.removeAll();
-//					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
-//					cartList.mSelectRow = -1;
-//				}
-//				// 새롭게 띄움
-//				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
-//				mPagePanel.revalidate();
-//				mPagePanel.repaint();
-//			}
-//		});
-		
-		
-		/* 장바구니 항목 삭제하기 이벤트 처리 */
-//		JButton bt6 = new JButton("장바구니 항목 삭제하기", new ImageIcon("./images/6.png"));
-//		MakeFont.getFont(bt6);
-////		mMenuPanel.add(bt6);
-//		bt6.addActionListener(new ActionListener() {
-//			public void actionPerformed(ActionEvent e) {
-//
-//				if (cartDao.getSize(member.getMid().toUpperCase()) == 0) {
-//					JOptionPane.showMessageDialog(bt6, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
-//				}else {
-//					mPagePanel.removeAll();
-//					CartItemListPage cartList = new CartItemListPage(mPagePanel, daoList);
-//					if(cartList.mSelectRow == -1) {
-//						JOptionPane.showMessageDialog(bt6, "삭제할 항목을 선택해주세요");
-//					}else {
-//						cartList.mSelectRow = -1;
-//					}
-//				}
-//				// 새롭게 띄움
-//				mPagePanel.add(new CartItemListPage(mPagePanel, daoList));
-//
-//				mPagePanel.revalidate();
-//				mPagePanel.repaint();
-//			}
-//		});
-
 		JButton bt7 = new JButton("주문하기", new ImageIcon("./images/7.png"));
 		MakeFont.getFont(bt7);
 		mMenuPanel.add(bt7);
-
 		bt7.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (cartDao.getSize(member.getMid().toUpperCase()) == 0)
 					JOptionPane.showMessageDialog(bt7, "장바구니가 비어있습니다", "message", JOptionPane.ERROR_MESSAGE);
 				else {
 					mPagePanel.removeAll();
-//					mPagePanel.add(new CartShippingPage(mPagePanel, cm, user, main));
+					mPagePanel.add(new CartShippingPage(mPagePanel, cm, main, daoList));
 					mPagePanel.revalidate();
 					mPagePanel.repaint();
 				}
 			}
 		});
-		
 
-		JButton bt8 = new JButton("종료", new ImageIcon("./images/8.png"));
+		JButton bt8 = new JButton("로그아웃", new ImageIcon("./images/8.png"));
 		MakeFont.getFont(bt8);
 		mMenuPanel.add(bt8);
-
 		bt8.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
-				int select = JOptionPane.showConfirmDialog(bt8, "쇼핑을 종료하시겠습니까? ");
-
+				int select = JOptionPane.showConfirmDialog(bt8, "로그아웃을 하시겠습니까? ");
 				if (select == 0) {
-					System.exit(1);
+					setVisible(false);
+					new GuestWindow("온라인 서점", 0, 0, 1000, 750);
 				}
 			}
 		});
@@ -263,7 +182,6 @@ public class MainWindow extends JFrame {
 		JButton bt9 = new JButton("관리자", new ImageIcon("./images/9.png"));
 		MakeFont.getFont(bt9);
 		mMenuPanel.add(bt9);
-
 		bt9.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				AdminLoginDialog adminDialog;

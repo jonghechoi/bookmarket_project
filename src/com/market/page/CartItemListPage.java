@@ -113,7 +113,6 @@ public class CartItemListPage extends JPanel {
 		JButton removeButton = new JButton();
 		removeButton.add(removeLabel);
 		buttonPanel.add(removeButton);
-		
 		/* 장바구니 항목 삭제하기 이벤트 처리 */
 		removeButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
@@ -131,30 +130,24 @@ public class CartItemListPage extends JPanel {
 		});
 
 		cartTable.addMouseListener(new MouseListener() {
-
 			public void mouseClicked(MouseEvent e) {
 				int row = cartTable.getSelectedRow();
 				mSelectRow = row;
 			}
-
+			
 			@Override
 			public void mousePressed(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
-
+			
 			@Override
 			public void mouseReleased(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
-
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 			@Override
 			public void mouseExited(MouseEvent e) {
-				// TODO Auto-generated method stub
 			}
 
 		});
@@ -167,7 +160,6 @@ public class CartItemListPage extends JPanel {
 		JButton updateQtyButton = new JButton();
 		updateQtyButton.add(updateQtyLabel);
 		buttonPanel.add(updateQtyButton);
-
 		updateQtyButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if(mSelectRow == -1) { 
@@ -194,7 +186,6 @@ public class CartItemListPage extends JPanel {
 		JButton updateQtyButton2 = new JButton();
 		updateQtyButton2.add(updateQtyLabel2);
 		buttonPanel.add(updateQtyButton2);
-
 		updateQtyButton2.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				if(mSelectRow == -1) { 
@@ -212,8 +203,6 @@ public class CartItemListPage extends JPanel {
 				}
 			}
 		});
-		
-		
 	}
 	
 	/* cartItemList 출력 */
@@ -240,10 +229,6 @@ public class CartItemListPage extends JPanel {
 		DecimalFormat df = new DecimalFormat("###,###");
 		String sprice = df.format(price);
 		System.out.println("sprice --> " + sprice);
-		
 		return sprice;
 	}
-	
-	
-	
 }// class

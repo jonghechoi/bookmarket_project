@@ -19,19 +19,20 @@ import com.market.book_market2.OrderUserVo;
 import com.market.commons.MakeFont;
 import com.market.main.GuestWindow;
 import com.market.main.MainWindow;
+import com.market.vo.MemberVo;
 
 public class CartOrderBillPage extends JPanel {
 	CartMgm cm;
-	OrderUserVo ouser;
+	MemberVo orderMember;
 	MainWindow main;
 	JPanel shippingPanel;
 	JPanel radioPanel;
 	JPanel mPagePanel;
 
-	public CartOrderBillPage(JPanel panel, CartMgm cm, OrderUserVo ouser, MainWindow main) {
+	public CartOrderBillPage(JPanel panel, CartMgm cm, MemberVo orderMember, MainWindow main) {
 		this.mPagePanel = panel;
 		this.cm = cm;
-		this.ouser = ouser;
+		this.orderMember = orderMember;
 		this.main = main;
 		setLayout(null);
 
@@ -44,10 +45,10 @@ public class CartOrderBillPage extends JPanel {
 		shippingPanel.setLayout(null);
 		panel.add(shippingPanel);
 		
-		printBillInfo(ouser);
+		printBillInfo(orderMember);
 	}
 
-	public void printBillInfo(OrderUserVo ouser) {
+	public void printBillInfo(MemberVo orderMember) {
 
 		Date date = new Date();
 		SimpleDateFormat formatter = new SimpleDateFormat("MM/dd/yyyy");
@@ -62,7 +63,7 @@ public class CartOrderBillPage extends JPanel {
 
 		JPanel panel02 = new JPanel();
 		panel02.setBounds(0, 30, 500, 30);
-		JLabel label02 = new JLabel("고객명 : " + ouser.getName() + "             연락처 :      " + ouser.getPhoneNumber());
+		JLabel label02 = new JLabel("고객명 : " + orderMember.getName() + "             연락처 :      " + orderMember.getPhone());
 		label02.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label02);
 		panel02.add(label02);
@@ -70,20 +71,19 @@ public class CartOrderBillPage extends JPanel {
 
 		JPanel panel03 = new JPanel();
 		panel03.setBounds(0, 60, 500, 30);
-		JLabel label03 = new JLabel("배송지 : " + ouser.getAddress() + "                 발송일 :       " + strDate);
+		JLabel label03 = new JLabel("배송지 : " + orderMember.getAddr() + "                 발송일 :       " + strDate);
 		label03.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label03);
 		panel03.add(label03);
 		shippingPanel.add(panel03);
 
-		JPanel printPanel = new JPanel();
+		JPanel printPanel = new JPanel(new GridLayout(8, 1));
 		printPanel.setBounds(0, 100, 500, 300);
 		printCart(printPanel);
 		shippingPanel.add(printPanel);
 	}
 
 	public void printCart(JPanel panel) {
-
 		Font ft;
 		ft = new Font("맑은 고딕", Font.BOLD, 12);
 
