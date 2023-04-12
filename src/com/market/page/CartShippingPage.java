@@ -39,7 +39,6 @@ public class CartShippingPage extends JPanel {
 		this.cartDao = (CartDao)daoList.get("cartDao");
 		this.memberDao = (MemberDao)daoList.get("memberDao");
 		orderMember = memberDao.select(main.member.getMid());
-//		this.ouser = (OrderUserVo)user;
 
 		setLayout(null);
 		Rectangle rect = panel.getBounds();

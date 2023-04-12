@@ -115,11 +115,11 @@ public class CartDao extends DBConn{
 		}
 	}
 	
-	public void delete(String mid, String clear) {
+	public int deleteAll(String mid) {
+		int result = 0;
 		StringBuffer sb = new StringBuffer();
 		sb.append("DELETE FROM BOOKMARKET_CART"
 				+ " WHERE MID=?");
-		
 		try {
 			getPreparedStatement(sb.toString());
 			pstmt.setString(1, mid);
@@ -127,6 +127,7 @@ public class CartDao extends DBConn{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		return result;
 	}
 	
 	/* 선택한 ITEM 수량 수정하기 */
@@ -154,7 +155,6 @@ public class CartDao extends DBConn{
 	/* '주문확정'을 위해 Cart 테이블에서 qty,isbn리스트 추출 후 OrderVo 리턴 */
 	// Cart 테이블에는 여러 멤버의 장바구니 아이템이 있음 -> mid로 추출 필요
 	public OrderVo getOrderVo(String mid) {
-		System.out.println("여기까지 진행2222222222222");
 		OrderVo orderVo = new OrderVo();
 		StringBuffer sb = new StringBuffer(50);
 		sb.append("SELECT QTY, ISBN FROM BOOKMARKET_CART"

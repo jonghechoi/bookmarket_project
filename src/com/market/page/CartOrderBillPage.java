@@ -22,6 +22,7 @@ import com.market.dao.CartDao;
 import com.market.dao.OrderDao;
 import com.market.main.GuestWindow;
 import com.market.main.MainWindow;
+import com.market.vo.CartVo;
 import com.market.vo.MemberVo;
 import com.market.vo.OrderVo;
 
@@ -123,11 +124,30 @@ public class CartOrderBillPage extends JPanel {
 		panel04.add(label04);
 		panel.add(panel04);
 
-		JPanel panel05 = new JPanel(new GridLayout(cm.getSize(),1));
-		ArrayList<CartItemVo> cartList = cm.getList();
+//		JPanel panel05 = new JPanel(new GridLayout(cm.getSize(),1));
+//		ArrayList<CartItemVo> cartList = cm.getList();
+//		int sum = 0;
+//		for (int i = 0; i < cm.getList().size(); i++) { // 13
+//			CartItemVo item = cartList.get(i);
+//			panel05.setBounds(50, 25 + (i * 5), 500, 5);
+//			panel05.setBackground(Color.GRAY);
+//
+//			JLabel label05 = new JLabel("               "+ item.getIsbn() + "                    "
+//					+ item.getQty() + "                    "
+//					+ item.getTotalPrice());
+//			label05.setFont(ft);
+//			panel05.add(label05);
+//			panel.add(panel05);
+//			
+//			// 주문 총금액 합계
+//			sum += item.getQty() * item.getTotalPrice();
+//		}
+		JPanel panel05 = new JPanel(new GridLayout(cartDao.getSize(main.member.getMid()),1));
+		
+		ArrayList<CartVo> cartList = cartDao.select(main.member.getMid().toUpperCase());
 		int sum = 0;
-		for (int i = 0; i < cm.getList().size(); i++) { // 13
-			CartItemVo item = cartList.get(i);
+		for (int i = 0; i < cartList.size(); i++) { // 13
+			CartVo item = cartList.get(i);
 			panel05.setBounds(50, 25 + (i * 5), 500, 5);
 			panel05.setBackground(Color.GRAY);
 
@@ -205,16 +225,22 @@ public class CartOrderBillPage extends JPanel {
 //					}
 					
 					OrderDao orderDao = new OrderDao();
-					int result = orderDao.insert(orderVo);
-					System.out.println("result --> " + result);
+//					int result = orderDao.insert(orderVo);
+					int result = orderDao.insertPrepared(orderVo);
+					if(result >= 1) {
+						// 장바구니 비우기 // Cartdao --> mid 일치하는 사용자의 데이터 삭제
+						int result2 = cartDao.deleteAll(main.member.getMid().toUpperCase());
+						if(result2 >=1) {
+							JOptionPane.showMessageDialog(null, "카트 비우기 완료");
+						}
+//						cm.remove(); 
+						JOptionPane.showMessageDialog(null, "주문이 완료되었습니다");
+					}
 					
-					// 장바구니 비우기
-					cm.remove(); 
-					JOptionPane.showMessageDialog(null, "주문이 완료되었습니다");
 					
 					// MainWindow 감추기
-					main.setVisible(false);
-					main.dispose();
+//					main.setVisible(false);
+//					main.dispose();
 					
 					// GuestWindow 열기
 					new GuestWindow("온라인 서점2", 0, 0, 1000, 750);
