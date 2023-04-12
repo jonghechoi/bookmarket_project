@@ -139,7 +139,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 		
-		JButton bt4 = new JButton("장바구니 항목 추가하기", new ImageIcon("./images/4.png"));
+		JButton bt4 = new JButton("장바구니 항목 추가하기", new ImageIcon("./images/3.png"));
 		MakeFont.getFont(bt4);
 		mMenuPanel.add(bt4);
 		bt4.addActionListener( e -> {
@@ -150,7 +150,7 @@ public class MainWindow extends JFrame {
 			mPagePanel.repaint();
 		});
 
-		JButton bt7 = new JButton("주문하기", new ImageIcon("./images/7.png"));
+		JButton bt7 = new JButton("주문하기", new ImageIcon("./images/4.png"));
 		MakeFont.getFont(bt7);
 		mMenuPanel.add(bt7);
 		bt7.addActionListener(new ActionListener() {
@@ -166,7 +166,7 @@ public class MainWindow extends JFrame {
 			}
 		});
 
-		JButton bt8 = new JButton("로그아웃", new ImageIcon("./images/8.png"));
+		JButton bt8 = new JButton("로그아웃", new ImageIcon("./images/5.png"));
 		MakeFont.getFont(bt8);
 		mMenuPanel.add(bt8);
 		bt8.addActionListener(new ActionListener() {
@@ -178,23 +178,25 @@ public class MainWindow extends JFrame {
 				}
 			}
 		});
-
-		JButton bt9 = new JButton("관리자", new ImageIcon("./images/9.png"));
-		MakeFont.getFont(bt9);
-		mMenuPanel.add(bt9);
-		bt9.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				AdminLoginDialog adminDialog;
-				JFrame frame = new JFrame();
-				adminDialog = new AdminLoginDialog(frame, "관리자 화면");
-				adminDialog.setVisible(true);
-				if (adminDialog.isLogin) {
-					mPagePanel.removeAll();
-					mPagePanel.add(new AdminPage(mPagePanel));
-					mPagePanel.revalidate();
-					mPagePanel.repaint();
+		
+		if(member.getMid().toUpperCase().equals("ADMIN1234")) {
+			JButton bt9 = new JButton("관리자", new ImageIcon("./images/6.png"));
+			MakeFont.getFont(bt9);
+			mMenuPanel.add(bt9);
+			bt9.addActionListener(new ActionListener() {
+				public void actionPerformed(ActionEvent e) {
+					AdminLoginDialog adminDialog;
+					JFrame frame = new JFrame();
+					adminDialog = new AdminLoginDialog(frame, "관리자 화면", memberDao);
+					adminDialog.setVisible(true);
+					if (adminDialog.isLogin) {
+						mPagePanel.removeAll();
+						mPagePanel.add(new AdminPage(mPagePanel, bookDao));
+						mPagePanel.revalidate();
+						mPagePanel.repaint();
+					}
 				}
-			}
-		});
+			});
+		}
 	}
 }

@@ -1,18 +1,28 @@
 package com.market.page;
 
-import javax.swing.*;
-
-import com.market.commons.MakeFont;
-
-import java.awt.*;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.io.FileWriter;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
+import javax.swing.AbstractAction;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+
+import com.market.commons.MakeFont;
+import com.market.dao.BookDao;
+import com.market.vo.BookVo;
 
 public class AdminPage extends JPanel {
+	BookDao bookDao;
 
-	public AdminPage(JPanel panel) {
+	public AdminPage(JPanel panel, BookDao bookDao) {
+		this.bookDao = bookDao;
 		setLayout(null);
 
 		Rectangle rect = panel.getBounds();
@@ -25,14 +35,19 @@ public class AdminPage extends JPanel {
 
 		JPanel idPanel = new JPanel();
 		idPanel.setBounds(100, 0, 700, 50);
-		JLabel idLabel = new JLabel("도서ID : ");
-		MakeFont.getFont(idLabel);
-		JLabel idTextField = new JLabel();
-		MakeFont.getFont(idTextField);
-		idTextField.setPreferredSize(new Dimension(290, 50));
-		idTextField.setText("ISBN" + strDate);
+		JLabel idLabel = new JLabel("도서 등록 화면 [관리자]");
+		idLabel.setFont(new Font("맑은 고딕", Font.BOLD, 20));
+		// 도서 ISBN은 시퀀스를 이용해서 자동으로 만들기 때문에 여기서 추가하지 않는다
+//		JPanel idPanel = new JPanel();
+//		idPanel.setBounds(100, 0, 700, 50);
+//		JLabel idLabel = new JLabel("도서ID : ");
+//		MakeFont.getFont(idLabel);
+//		JLabel idTextField = new JLabel();
+//		MakeFont.getFont(idTextField);
+//		idTextField.setPreferredSize(new Dimension(290, 50));
+//		idTextField.setText("ISBN" + strDate);
 		idPanel.add(idLabel);
-		idPanel.add(idTextField);
+//		idPanel.add(idTextField);
 		add(idPanel);
 
 		JPanel namePanel = new JPanel();
@@ -106,35 +121,20 @@ public class AdminPage extends JPanel {
 
 		okButton.addActionListener(new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
-				String[] writeBook = new String[7];
-				writeBook[0] = idTextField.getText();
-				writeBook[1] = nameTextField.getText();
-				writeBook[2] = priceTextField.getText();
-				writeBook[3] = authorTextField.getText();
-				writeBook[4] = descTextField.getText();
-				writeBook[5] = categoryTextField.getText();
-				writeBook[6] = dateTextField.getText();
-				try {
-					FileWriter fw = new FileWriter("book.txt", true);
-					for (int i = 0; i < 7; i++)
-						fw.write(writeBook[i] + "\n");
-					fw.close();
-					JOptionPane.showMessageDialog(okButton, "등록이 완료되었습니다");
-
-					Date date = new Date();
-					SimpleDateFormat formatter = new SimpleDateFormat("yyMMddhhmmss");
-					String strDate = formatter.format(date);
-
-					idTextField.setText("ISBN" + strDate);
-					nameTextField.setText("");
-					priceTextField.setText("");
-					authorTextField.setText("");
-					descTextField.setText("");
-					categoryTextField.setText("");
-					dateTextField.setText("");
-
-				} catch (Exception ex) {
-					System.out.println(ex);
+				// BookVo에 데이터 추가
+				BookVo bookVo = new BookVo();
+				
+				bookVo.setTitle(nameTextField.getText());
+				bookVo.setPrice(Integer.valueOf(priceTextField.getText()));
+				bookVo.setAuthor(authorTextField.getText());
+				bookVo.setIntro(descTextField.getText());
+				bookVo.setPart(categoryTextField.getText());
+				bookVo.setPdate(dateTextField.getText());
+				
+				// DB 저장
+				int result = bookDao.insert(bookVo);
+				if(result == 1) {
+					JOptionPane.showMessageDialog(null, "등록이 완료되었습니다");
 				}
 			}
 		});

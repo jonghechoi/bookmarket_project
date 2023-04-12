@@ -37,4 +37,30 @@ public class BookDao extends DBConn {
 		
 		return list;
 	}
+	
+	/**
+	 *	관리자 페이지에서 도서 추가 
+	 */
+	public int insert(BookVo bookVo) {
+		int result = 0;
+		StringBuffer sb = new StringBuffer(100);
+		sb.append("INSERT INTO BOOKMARKET_BOOK");
+		sb.append(" VALUES('ISBN_'||LTRIM(TO_CHAR(SEQU_BOOKMARKET_BOOK_ISBN.NEXTVAL, '0000')),");
+		sb.append(" ?, ?, ?, ?, ?, ?, NULL, SYSDATE)");
+		
+		try {
+			getPreparedStatement(sb.toString());
+			pstmt.setString(1, bookVo.getTitle());
+			pstmt.setInt(2, bookVo.getPrice());
+			pstmt.setString(3, bookVo.getAuthor());
+			pstmt.setString(4, bookVo.getIntro());
+			pstmt.setString(5, bookVo.getPart());
+			pstmt.setString(6, bookVo.getPdate());
+			result = pstmt.executeUpdate();
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+		
+		return result;
+	}
 }

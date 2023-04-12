@@ -17,15 +17,18 @@ import javax.swing.JTextField;
 
 import com.market.book_market2.AdminVo;
 import com.market.commons.MakeFont;
+import com.market.dao.MemberDao;
 
 public class AdminLoginDialog extends JDialog {
 
 	JTextField idField;
 	JPasswordField pwField;
+	MemberDao memberDao;
 	public boolean isLogin = false;
 
-	public AdminLoginDialog(JFrame frame, String str) {
+	public AdminLoginDialog(JFrame frame, String str, MemberDao memberDao) {
 		super(frame, "관리자 로그인", true);
+		this.memberDao = memberDao;
 
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		setLocation((screenSize.width - 400) / 2, (screenSize.height - 300) / 2);
@@ -76,12 +79,11 @@ public class AdminLoginDialog extends JDialog {
 
 		okButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-
 				AdminVo admin = new AdminVo();
-				String uid = idField.getText().trim().toLowerCase();
-				String upass = pwField.getText().trim().toLowerCase();
+				String uid = idField.getText().trim().toUpperCase();
+				String upass = pwField.getText().trim().toUpperCase();
 				
-				if (admin.getId().equals(uid) && admin.getPass().equals(upass)) {
+				if (memberDao.select(uid, upass) == 1) {
 					isLogin = true;
 					dispose();
 				} else

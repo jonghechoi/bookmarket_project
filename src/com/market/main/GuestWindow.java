@@ -136,8 +136,8 @@ public class GuestWindow extends JFrame implements ActionListener {
 					JOptionPane.showMessageDialog(null, "패스워드를 입력해주세요");
 					phoneField.requestFocus();
 				}else {
-					String mid = nameField.getText().trim();
-					String pass = phoneField.getText().trim();
+					String mid = nameField.getText().trim().toUpperCase();
+					String pass = phoneField.getText().trim().toUpperCase();
 					if(memberDao.select(mid, pass) == 1) {
 						MemberVo member = new MemberVo();
 						member.setMid(nameField.getText());
