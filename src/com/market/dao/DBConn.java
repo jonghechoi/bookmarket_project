@@ -39,7 +39,8 @@ public class DBConn {
 	
 	public void getPreparedStatement(String sql) {
 		try {
-			pstmt = conn.prepareStatement(sql);
+			pstmt = conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, 
+											   ResultSet.CONCUR_UPDATABLE);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}

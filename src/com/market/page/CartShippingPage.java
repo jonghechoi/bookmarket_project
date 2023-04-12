@@ -161,7 +161,8 @@ public class CartShippingPage extends JPanel {
 				radioPanel.revalidate();
 				radioPanel.repaint();
 				shippingPanel.removeAll();
-				shippingPanel.add(new CartOrderBillPage(shippingPanel, cm, orderMember, main));
+				shippingPanel.add(new CartOrderBillPage(shippingPanel, cm, orderMember, main,
+														cartDao));
 
 				shippingPanel.revalidate();
 				shippingPanel.repaint();

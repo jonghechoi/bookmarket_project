@@ -1,9 +1,10 @@
 package com.market.dao;
 
+import java.sql.ResultSet;
 import java.util.ArrayList;
 
-import com.market.vo.BookVo;
 import com.market.vo.CartVo;
+import com.market.vo.OrderVo;
 
 public class CartDao extends DBConn{
 	// CartAddItemPage에서 ‘장바구니 담기’ 버튼 눌렀을 때 CartVo → CartDao를 이용해서 DB에 저장
@@ -149,4 +150,63 @@ public class CartDao extends DBConn{
 			e.printStackTrace();
 		}
 	}
+	
+	/* '주문확정'을 위해 Cart 테이블에서 qty,isbn리스트 추출 후 OrderVo 리턴 */
+	// Cart 테이블에는 여러 멤버의 장바구니 아이템이 있음 -> mid로 추출 필요
+	public OrderVo getOrderVo(String mid) {
+		System.out.println("여기까지 진행2222222222222");
+		OrderVo orderVo = new OrderVo();
+		StringBuffer sb = new StringBuffer(50);
+		sb.append("SELECT QTY, ISBN FROM BOOKMARKET_CART"
+				+ " WHERE MID=?"
+				+ " ORDER BY CDATE DESC");
+		
+		try {
+			getPreparedStatement(sb.toString());
+			pstmt.setString(1, mid);
+			// PreparedStatement가 생성될 때 커서를 움직일 수 있는 조건을 미리 걸어줘야함
+			// conn.prepareStatement(sql, ResultSet.TYPE_SCROLL_INSENSITIVE, 
+			// ResultSet.CONCUR_UPDATABLE)
+			
+			rs = pstmt.executeQuery(); 
+
+			// ResultSet에서 전체 row수를 반환하는 메소드가 없는 이유??
+			// 테이블 내에서 커서이동을 허락하는 메소드의 default는 false이다
+			// 왜 default? 자바에서 이뤄지는게 아닌 DB에서 커서를 옮길때마다 rs가 생성되어지므로
+			// 데이터 양이 많을때에는 부하가 발생해서
+			// 위에 있는 것처럼 조건 걸어서 풀어줘야함 -> 권장 X
+			rs.last();
+			
+			int[] qtyList = new int[rs.getRow()];
+			String[] isbnList = new String[rs.getRow()];
+			rs.beforeFirst();
+			
+			int idx = 0;
+			while(rs.next()) {
+				qtyList[idx] = rs.getInt(1);
+				isbnList[idx] = rs.getString(2);
+				idx++;
+			}
+			orderVo.setQtyList(qtyList); 
+			orderVo.setIsbnList(isbnList);
+		}catch(Exception e) {
+			e.printStackTrace();
+		}
+
+		
+		return orderVo;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }

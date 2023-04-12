@@ -3,9 +3,9 @@ package com.market.vo;
 public class OrderVo {
 	String oid, odate, isbn, mid, name, phone, addr;
 	int rno, qty;
-	// 고객 한 명당 여러개의 도서/수량을 선택하기 때문에 배열 필요
-	String[] isbnList; // 데이터 추가용 
-	int[] qtyList; // 데이터 추가용
+	// 고객 한 명당 여러개의 도서/수량을 선택하기 때문에 배열 필요 // 서로 다른 데이터 추가용
+	String[] isbnList;  
+	int[] qtyList; 
 	
 	public String getOid() {
 		return oid;

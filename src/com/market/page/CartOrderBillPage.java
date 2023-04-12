@@ -6,7 +6,9 @@ import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
@@ -15,24 +17,30 @@ import javax.swing.JPanel;
 
 import com.market.book_market2.CartItemVo;
 import com.market.book_market2.CartMgm;
-import com.market.book_market2.OrderUserVo;
 import com.market.commons.MakeFont;
+import com.market.dao.CartDao;
+import com.market.dao.OrderDao;
 import com.market.main.GuestWindow;
 import com.market.main.MainWindow;
 import com.market.vo.MemberVo;
+import com.market.vo.OrderVo;
 
 public class CartOrderBillPage extends JPanel {
 	CartMgm cm;
 	MemberVo orderMember;
+	CartDao cartDao;
+	
 	MainWindow main;
 	JPanel shippingPanel;
 	JPanel radioPanel;
 	JPanel mPagePanel;
 
-	public CartOrderBillPage(JPanel panel, CartMgm cm, MemberVo orderMember, MainWindow main) {
+	public CartOrderBillPage(JPanel panel, CartMgm cm, MemberVo orderMember, MainWindow main,
+							 CartDao cartDao) {
 		this.mPagePanel = panel;
 		this.cm = cm;
 		this.orderMember = orderMember;
+		this.cartDao = cartDao;
 		this.main = main;
 		setLayout(null);
 
@@ -159,9 +167,47 @@ public class CartOrderBillPage extends JPanel {
 		
 		btnOrderFinish.addActionListener( e -> {
 			int select = JOptionPane.showConfirmDialog(null, "주문 확정을 하시겠습니까?");
-			System.out.println("select => "+select);
 			switch (select) {
 				case 0:
+					// BOOKMARKET_ORDER 테이블에 저장할 데이터 생성
+					// OID, ODATE, QTY리스트, ISBN리스트, MID, NAME, PHONE, ADDR 
+					// -> OrderVo에 넣고 -> DB에 insert()
+					// QTY리스트, ISBN리스트 -> CartDao를 통해 생성 후 여기서 사용하는 OrderVo 타입으로 리턴
+					OrderVo orderVo = cartDao.getOrderVo(orderMember.getMid().toUpperCase());
+					
+					// OID, ODATE -> UUID, Calendar 클래스 이용해 여기서 생성
+					UUID uuid = UUID.randomUUID();
+					Calendar cal = Calendar.getInstance();
+					String oid = uuid.toString();
+					String odate = cal.get(Calendar.YEAR) + "/" + 
+								  (cal.get(Calendar.MONTH)+1) + "/" + 
+								   cal.get(Calendar.DATE);
+		
+					// MID, NAME, PHONE, ADDR -> orderMember에서 데이터 추출
+					orderVo.setOid(oid);
+					orderVo.setOdate(odate);
+					orderVo.setMid(orderMember.getMid());
+					orderVo.setName(orderMember.getName());
+					orderVo.setPhone(orderMember.getPhone());
+					orderVo.setAddr(orderMember.getAddr());
+					
+					// 출력결과 확인
+//					for(int i=0; i<orderVo.getQtyList().length; i++) {
+//						System.out.print(orderVo.getOid() + '\t');
+//						System.out.print(orderVo.getOdate() + '\t');
+//						System.out.print(orderVo.getMid() + '\t');
+//						System.out.print(orderVo.getName() + '\t');
+//						System.out.print(orderVo.getPhone() + '\t');
+//						System.out.print(orderVo.getAddr() + '\t');
+//						System.out.print(orderVo.getQtyList()[i] + '\t');
+//						System.out.print(orderVo.getIsbnList()[i] + '\t');
+//						System.out.println();
+//					}
+					
+					OrderDao orderDao = new OrderDao();
+					int result = orderDao.insert(orderVo);
+					System.out.println("result --> " + result);
+					
 					// 장바구니 비우기
 					cm.remove(); 
 					JOptionPane.showMessageDialog(null, "주문이 완료되었습니다");
