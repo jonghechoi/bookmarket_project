@@ -1,6 +1,7 @@
 package com.market.page;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.text.DecimalFormat;
@@ -10,10 +11,12 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.UUID;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.border.Border;
 
 import com.market.book_market2.CartMgm;
 import com.market.commons.MakeFont;
@@ -49,7 +52,9 @@ public class CartOrderBillPage extends JPanel {
 		setPreferredSize(rect.getSize());
 
 		shippingPanel = new JPanel(new GridLayout(5, 1));
-		shippingPanel.setBounds(0, 0, 700, 500);
+//		shippingPanel.setBounds(0, 0, 700, 500);
+		shippingPanel.setBounds(70, 0, 500, 500);
+		shippingPanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
 		shippingPanel.setLayout(null);
 		panel.add(shippingPanel);
 		
@@ -62,14 +67,14 @@ public class CartOrderBillPage extends JPanel {
 		String strDate = formatter.format(date);
 
 		JPanel panel01 = new JPanel();
-		panel01.setBounds(0, 0, 500, 30);
+		panel01.setBounds(60, 10, 400, 30);
 		JLabel label01 = new JLabel("------------------- 배송 받을 고객 정보 ---------------------");
 		MakeFont.getFont(label01);
 		panel01.add(label01);
 		shippingPanel.add(panel01);
 
 		JPanel panel02 = new JPanel(new BorderLayout());
-		panel02.setBounds(50, 30, 500, 30);
+		panel02.setBounds(50, 40, 400, 30);
 		JLabel label02 = new JLabel("   고객명 : " + orderMember.getName());
 		label02.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label02);
@@ -77,7 +82,7 @@ public class CartOrderBillPage extends JPanel {
 		shippingPanel.add(panel02, BorderLayout.WEST);
 		
 		JPanel panel03 = new JPanel(new BorderLayout());
-		panel03.setBounds(50, 60, 500, 30);
+		panel03.setBounds(50, 70, 400, 30);
 		JLabel label03 = new JLabel("   연락처 : " + orderMember.getPhone());
 		label03.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label03);
@@ -85,7 +90,7 @@ public class CartOrderBillPage extends JPanel {
 		shippingPanel.add(panel03, BorderLayout.WEST);
 
 		JPanel panel04 = new JPanel(new BorderLayout());
-		panel04.setBounds(50, 90, 500, 30);
+		panel04.setBounds(50, 100, 400, 30);
 		JLabel label04 = new JLabel("   배송지 : " + orderMember.getAddr());
 		label04.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label04);
@@ -93,15 +98,15 @@ public class CartOrderBillPage extends JPanel {
 		shippingPanel.add(panel04, BorderLayout.WEST);
 		
 		JPanel panel05 = new JPanel(new BorderLayout());
-		panel05.setBounds(50, 120, 500, 30);
+		panel05.setBounds(50, 130, 400, 30);
 		JLabel label05 = new JLabel("   발송일 : " + strDate);
 		label05.setHorizontalAlignment(JLabel.LEFT);
 		MakeFont.getFont(label05);
 		panel05.add(label05);
 		shippingPanel.add(panel05, BorderLayout.WEST);
 		
-		JPanel printPanel = new JPanel(new GridLayout(8, 1));
-		printPanel.setBounds(0, 150, 500, 300);
+		JPanel printPanel = new JPanel(new GridLayout(7, 1));
+		printPanel.setBounds(30, 160, 450, 300);
 		printCart(printPanel);
 		shippingPanel.add(printPanel);
 	}
@@ -114,13 +119,13 @@ public class CartOrderBillPage extends JPanel {
 		panel01.add(label01);
 		panel.add(panel01);
 
-		JPanel panel02 = new JPanel();
-		panel02.setBounds(0, 20, 500, 5);
-		JLabel label02 = new JLabel("---------------------------------------------------------------");
-		MakeFont.getFont(label02);
-		MakeFont.getFont(label01);
-		panel02.add(label02);
-		panel.add(panel02);
+//		JPanel panel02 = new JPanel();
+//		panel02.setBounds(0, 20, 500, 5);
+//		JLabel label02 = new JLabel("---------------------------------------------------------------");
+//		MakeFont.getFont(label02);
+//		MakeFont.getFont(label01);
+//		panel02.add(label02);
+//		panel.add(panel02);
 
 		JPanel panel03 = new JPanel();
 		panel03.setBounds(0, 25, 500, 5);

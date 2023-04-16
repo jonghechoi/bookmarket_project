@@ -99,7 +99,7 @@ public class CartItemListPage extends JPanel {
 			public void actionPerformed(ActionEvent e) {
 					int select = JOptionPane.showConfirmDialog(clearButton, "정말로 삭제하시겠습니까? ");
 					if (select == 0) {
-						cartDao.delete(MainWindow.member.getMid().toUpperCase(), "clear");
+						cartDao.deleteAll(MainWindow.member.getMid().toUpperCase());
 						TableModel tableModel = new DefaultTableModel(new Object[0][0], tableHeader);
 						cartTable.setModel(tableModel);
 						totalPricelabel.setText("총금액: " + 0 + " 원");
@@ -121,8 +121,8 @@ public class CartItemListPage extends JPanel {
 				else if (mSelectRow == -1) // 아무 row도 선택하지 않았을 경우
 					JOptionPane.showMessageDialog(clearButton, "삭제할 항목을 선택해주세요");
 				else {
-					String rno = (String)cartTable.getValueAt(mSelectRow, 1); // RNO 번호로 삭제
-					cartDao.delete(rno);
+					String isbn = (String)cartTable.getValueAt(mSelectRow, 1); // isbn 번호로 삭제
+					cartDao.delete(isbn);
 					showList();
 					mSelectRow = -1; // 마우스 커서 해제
 				}
@@ -166,14 +166,10 @@ public class CartItemListPage extends JPanel {
 					JOptionPane.showMessageDialog(null, "수정할 항목을 선택해주세요");
 				}else {
 					int qty = cartItemList.get(mSelectRow).getQty();
-					if(qty > 0) {
-						// 수량 업데이트 Dao 메소드 만들어야 함
-						cartDao.updateQty(cartItemList.get(mSelectRow).getCid(), "plus");
-						showList();
-						mSelectRow = -1;
-					}else {
-						JOptionPane.showMessageDialog(null, "0보다 큰 경우에만 수정 가능합니다.");
-					}
+					// 수량 업데이트 Dao 메소드 만들어야 함
+					cartDao.updateQty(cartItemList.get(mSelectRow).getCid(), "plus");
+					showList();
+					mSelectRow = -1;
 				}
 			}
 		});
@@ -192,13 +188,15 @@ public class CartItemListPage extends JPanel {
 					JOptionPane.showMessageDialog(null, "수정할 항목을 선택해주세요");
 				}else {
 					int qty = cartItemList.get(mSelectRow).getQty();
-					if(qty > 0) {
+					if(qty > 1) {
 						// 수량 업데이트 Dao 메소드 만들어야 함
 						cartDao.updateQty(cartItemList.get(mSelectRow).getCid(), "minus");
 						showList();
 						mSelectRow = -1;
-					}else {
-						JOptionPane.showMessageDialog(null, "0보다 큰 경우에만 수정 가능합니다.");
+					}else if(qty == 1) {
+						cartDao.delete((String)cartTable.getValueAt(mSelectRow, 1));
+						showList();
+						mSelectRow = -1;
 					}
 				}
 			}

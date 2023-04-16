@@ -1,5 +1,6 @@
 package com.market.main;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -9,6 +10,7 @@ import java.awt.event.WindowEvent;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -64,7 +66,6 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 		setResizable(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		System.out.println("통과5.5");
 		setIconImage(new ImageIcon("./images/shop.png").getImage());
 	}
 	
@@ -75,7 +76,6 @@ public class MainWindow extends JFrame {
 		setVisible(true);
 		setResizable(true);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-		System.out.println("통과5.5");
 		setIconImage(new ImageIcon("./images/shop.png").getImage());
 	}
 
@@ -88,12 +88,12 @@ public class MainWindow extends JFrame {
 		setLocation((screenSize.width - 1000) / 2, (screenSize.height - 750) / 2);
 
 		mMenuPanel = new JPanel();
-		mMenuPanel.setBounds(0, 20, width, 130);
+		mMenuPanel.setBounds(0, 20, width, 50);
 		menuIntroduction();
 		add(mMenuPanel);
 
 		mPagePanel = new JPanel();
-		mPagePanel.setBounds(0, 150, width, height);
+		mPagePanel.setBounds(0, 100, width, height);
 		add(mPagePanel);
 		
 		mPagePanel.removeAll();

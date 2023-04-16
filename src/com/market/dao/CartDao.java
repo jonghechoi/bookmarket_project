@@ -101,15 +101,15 @@ public class CartDao extends DBConn{
 		return list;
 	}
 	
-	public void delete(String rno) {
+	public void delete(String isbn) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("DELETE FROM BOOKMARKET_CART"
-				+ " WHERE RNO=?");
-		
+				+ " WHERE ISBN=?");
 		try {
 			getPreparedStatement(sb.toString());
-			pstmt.setString(1, rno);
-			pstmt.executeUpdate();
+			pstmt.setString(1, isbn);
+			int i = pstmt.executeUpdate();
+			System.out.println("i --> " + i);
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -192,21 +192,6 @@ public class CartDao extends DBConn{
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
-
-		
 		return orderVo;
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 }
